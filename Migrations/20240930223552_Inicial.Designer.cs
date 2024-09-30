@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AndyJavier_AP1_P1.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20240924012951_Inicial")]
+    [Migration("20240930223552_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -19,15 +19,26 @@ namespace AndyJavier_AP1_P1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Registro", b =>
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
                 {
-                    b.Property<int>("RegistroId")
+                    b.Property<int>("PrestamoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("RegistroId");
+                    b.Property<string>("Concepto")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("Registros");
+                    b.Property<string>("Deudor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Monto")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("PrestamoId");
+
+                    b.ToTable("Prestamos");
                 });
 #pragma warning restore 612, 618
         }
