@@ -1,0 +1,35 @@
+﻿@page "/Prestamos/Details/{prestamoId:int}"
+@inject PrestamoServices prestamoServices
+@inject NavigationManager NavigationManager
+
+<h3>Detalles del Pr&eacute;stamo</h3>
+
+@if (prestamo == null)
+{
+    <p><em>Cargando pr&eacute;stamo...</em></p>
+}
+else
+{
+    <div>
+        <h4>Monto: @prestamo.Monto</h4>
+        <h4>Concepto: @prestamo.Concepto</h4>
+        <h4>Deudor: @prestamo.Deudor</h4>
+    </div>
+    <button class="btn btn-secondary" @onclick="Volver">Volver</button>
+}
+
+@code {
+    [Parameter]
+    public int prestamoId { get; set; }
+    private Prestamo prestamo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        prestamo = await prestamoServices.Buscar(prestamoId);
+    }
+
+    private void Volver()
+    {
+        NavigationManager.NavigateTo("/Prestamos/Index");
+    }
+}
