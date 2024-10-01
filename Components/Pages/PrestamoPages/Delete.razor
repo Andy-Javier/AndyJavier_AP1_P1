@@ -1,0 +1,33 @@
+﻿@page "/Prestamos/Delete/{prestamoId:int}"
+@inject PrestamoServices prestamoServices
+@inject NavigationManager navigationManager
+
+<PageTitle>Eliminar Préstamo</PageTitle>
+
+<h3>Eliminar Préstamo</h3>
+
+<p>¿Estás seguro de que deseas eliminar el préstamo con ID @prestamoId?</p>
+
+<div class="d-flex justify-content-end">
+    <button class="btn btn-danger" @onclick="EliminarPrestamo">Eliminar</button>
+    <button class="btn btn-secondary ms-2" @onclick="Cancelar">Cancelar</button>
+</div>
+
+@code {
+    [Parameter]
+    public int prestamoId { get; set; }
+
+    private async Task EliminarPrestamo()
+    {
+        var eliminado = await prestamoServices.Eliminar(prestamoId);
+        if (eliminado)
+        {            
+            navigationManager.NavigateTo("/Prestamos/Index");
+        }
+    }
+
+    private void Cancelar()
+    {
+        navigationManager.NavigateTo("/Prestamos/Index");
+    }
+}
