@@ -1,0 +1,43 @@
+﻿@page "/Prestamos/Create"
+@inject PrestamoServices prestamoServices
+@inject NavigationManager NavigationManager
+
+<h3>Crear Pr&Eacute;stamo</h3>
+
+<EditForm Model="prestamo" OnValidSubmit="GuardarPrestamo">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="monto" class="form-label">Monto</label>
+        <InputNumber id="monto" @bind-Value="prestamo.Monto" class="form-control" required />
+    </div>
+    
+    <div class="mb-3">
+        <label for="concepto" class="form-label">Concepto</label>
+        <InputText id="concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
+    </div>
+    
+    <div class="mb-3">
+        <label for="deudor" class="form-label">Deudor</label>
+        <InputText id="deudor" @bind-Value="prestamo.Deudor" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+@code {
+    private Prestamo prestamo = new Prestamo();
+
+    private async Task GuardarPrestamo()
+    {
+        await prestamoServices.Guardar(prestamo);
+        NavigationManager.NavigateTo("/Prestamos/Index");
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/Prestamos/Index");
+    }
+}
