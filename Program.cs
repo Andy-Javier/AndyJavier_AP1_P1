@@ -19,6 +19,12 @@ public class Program
 
         // Registrar PrestamoServices
         builder.Services.AddScoped<PrestamoServices>();
+        builder.Services.AddScoped<ClienteServices>();
+        builder.Services.AddScoped<ClientesDetalleServices>();
+        builder.Services.AddScoped<TiposTelefonosServices>();
+        builder.Services.AddScoped<CobroServices>();
+        builder.Services.AddScoped<CobroDetalleServices>();
+        builder.Services.AddScoped<DeudorServices>();
         builder.Services.AddBlazorBootstrap();
 
         var app = builder.Build();
