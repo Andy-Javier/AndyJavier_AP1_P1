@@ -41,4 +41,16 @@ public class ClienteServices
         _contexto.Clientes.Remove(cliente);
         return await _contexto.SaveChangesAsync() > 0;
     }
+    public async Task<bool> Guardar(Cliente cliente)
+    {
+        if (cliente.ClienteId == 0)
+        {
+            return await Insertar(cliente);
+        }
+        else
+        {
+            return await Modificar(cliente);
+        }
+    }
+
 }
