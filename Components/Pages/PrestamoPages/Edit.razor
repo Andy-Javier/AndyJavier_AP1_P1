@@ -18,15 +18,15 @@ else
             <label for="monto" class="form-label">Monto</label>
             <InputNumber id="monto" @bind-Value="prestamo.Monto" class="form-control" required />
         </div>
-        
+
         <div class="mb-3">
             <label for="concepto" class="form-label">Concepto</label>
             <InputText id="concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
         </div>
-        
+
         <div class="mb-3">
             <label for="deudor" class="form-label">Deudor</label>
-            <InputText id="deudor" @bind-Value="prestamo.Deudor" class="form-control" required />
+            <InputText id="deudor" @bind-Value="prestamo.Deudor.Nombres" class="form-control" required />
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>
@@ -37,7 +37,7 @@ else
 @code {
     [Parameter]
     public int prestamoId { get; set; }
-    private Prestamo prestamo;
+    private Prestamo? prestamo;
 
     protected override async Task OnInitializedAsync()
     {

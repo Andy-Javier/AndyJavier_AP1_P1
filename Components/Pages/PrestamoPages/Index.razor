@@ -116,8 +116,9 @@
             }
             else if (filtro == "deudor")
             {
-                ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
+                ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Nombres.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
             }
+
             else if (filtro == "concepto")
             {
                 ListaPrestamos = await prestamoServices.Listar(p => p.Concepto.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));

@@ -18,12 +18,14 @@ public class PrestamoServices
 
     private async Task<bool> Insertar(Prestamo prestamo)
     {
+        prestamo.Balance = prestamo.Monto;
         _contexto.Prestamos.Add(prestamo);
         return await _contexto.SaveChangesAsync() > 0;
     }
 
     private async Task<bool> Modificar(Prestamo prestamo)
     {
+        prestamo.Balance = prestamo.Monto;
         _contexto.Prestamos.Update(prestamo);
         var modificado = await _contexto.SaveChangesAsync() > 0;
         _contexto.Entry(prestamo).State = EntityState.Detached;
