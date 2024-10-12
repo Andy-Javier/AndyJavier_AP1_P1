@@ -1,5 +1,6 @@
 ﻿@page "/Prestamos/Create"
 @inject PrestamoServices prestamoServices
+@inject DeudorServices deudorServices // Agrega este servicio
 @inject NavigationManager NavigationManager
 
 <h3>Crear Pr&eacute;stamo</h3>
@@ -12,15 +13,20 @@
         <label for="monto" class="form-label">Monto</label>
         <InputNumber id="monto" @bind-Value="prestamo.Monto" class="form-control" required />
     </div>
-    
+
     <div class="mb-3">
         <label for="concepto" class="form-label">Concepto</label>
         <InputText id="concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
     </div>
-    
+
     <div class="mb-3">
         <label for="deudor" class="form-label">Deudor</label>
-        <InputText id="deudor" @bind-Value="prestamo.Deudor" class="form-control" required />
+        <select id="deudor" @bind="prestamo.DeudorId" class="form-control" required>
+            @foreach (var deudor in deudores)
+            {
+                <option value="@deudor.DeudorId">@deudor.Nombres</option>
+            }
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -29,6 +35,12 @@
 
 @code {
     private Prestamo prestamo = new Prestamo();
+    private List<Deudor> deudores = new List<Deudor>(); // Lista de deudores
+
+    protected override async Task OnInitializedAsync()
+    {
+        deudores = await deudorServices.Listar(); // Cargar la lista de deudores
+    }
 
     private async Task GuardarPrestamo()
     {
