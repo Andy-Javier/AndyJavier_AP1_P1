@@ -1,0 +1,55 @@
+﻿@page "/Clientes/Delete/{ClienteId:int}"
+@inject ClienteServices clienteServices
+@inject NavigationManager NavigationManager
+
+<h3>Eliminar Cliente</h3>
+
+@if (cliente == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <div class="mb-3">
+        <label><strong>Nombres:</strong></label>
+        <p>@cliente.Nombres</p>
+    </div>
+    <div class="mb-3">
+        <label><strong>RNC:</strong></label>
+        <p>@cliente.Rnc</p>
+    </div>
+    <div class="mb-3">
+        <label><strong>Dirección:</strong></label>
+        <p>@cliente.Direccion</p>
+    </div>
+    <div class="mb-3">
+        <label><strong>Límite de Crédito:</strong></label>
+        <p>@cliente.LimiteCredito</p>
+    </div>
+
+    <button class="btn btn-danger" @onclick="EliminarCliente"><i class="fas fa-trash-alt"></i> Eliminar</button>
+    <button class="btn btn-secondary" @onclick="Cancelar"><i class="fas fa-times"></i> Cancelar</button>
+}
+
+@code {
+    [Parameter]
+    public int ClienteId { get; set; }
+
+    private Cliente? cliente;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cliente = await clienteServices.Buscar(ClienteId);
+    }
+
+    private async Task EliminarCliente()
+    {
+        await clienteServices.Eliminar(ClienteId);
+        NavigationManager.NavigateTo("/Clientes/Index");
+    }
+
+    private void Cancelar()
+    {
+        NavigationManager.NavigateTo("/Clientes/Index");
+    }
+}
