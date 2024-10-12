@@ -16,9 +16,18 @@ public class DeudorServices
         return await _contexto.Deudores.ToListAsync();
     }
 
+    public async Task<List<Deudor>> ListarConClientes()
+    {
+        return await _contexto.Deudores
+            .Include(d => d.Cliente) // Asegúrate de incluir la relación
+            .ToListAsync();
+    }
+
     public async Task<Deudor?> Buscar(int deudorId)
     {
-        return await _contexto.Deudores.FindAsync(deudorId);
+        return await _contexto.Deudores
+            .Include(d => d.Cliente) // Incluir la relación con Cliente
+            .FirstOrDefaultAsync(d => d.DeudorId == deudorId);
     }
 
     public async Task<bool> Insertar(Deudor deudor)
