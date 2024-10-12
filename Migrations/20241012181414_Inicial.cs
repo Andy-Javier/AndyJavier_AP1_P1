@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AndyJavier_AP1_P1.Migrations
 {
     /// <inheritdoc />
-    public partial class AddNewTables : Migration
+    public partial class Inicial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,19 +25,6 @@ namespace AndyJavier_AP1_P1.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.ClienteId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Deudores",
-                columns: table => new
-                {
-                    DeudorId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Nombres = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Deudores", x => x.DeudorId);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,6 +55,26 @@ namespace AndyJavier_AP1_P1.Migrations
                     table.PrimaryKey("PK_ClientesDetalles", x => x.DetalleId);
                     table.ForeignKey(
                         name: "FK_ClientesDetalles_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "ClienteId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Deudores",
+                columns: table => new
+                {
+                    DeudorId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nombres = table.Column<string>(type: "TEXT", nullable: false),
+                    ClienteId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deudores", x => x.DeudorId);
+                    table.ForeignKey(
+                        name: "FK_Deudores_Clientes_ClienteId",
                         column: x => x.ClienteId,
                         principalTable: "Clientes",
                         principalColumn: "ClienteId",
@@ -165,6 +172,11 @@ namespace AndyJavier_AP1_P1.Migrations
                 column: "DeudorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Deudores_ClienteId",
+                table: "Deudores",
+                column: "ClienteId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Prestamos_DeudorId",
                 table: "Prestamos",
                 column: "DeudorId");
@@ -183,9 +195,6 @@ namespace AndyJavier_AP1_P1.Migrations
                 name: "TiposTelefonos");
 
             migrationBuilder.DropTable(
-                name: "Clientes");
-
-            migrationBuilder.DropTable(
                 name: "Cobros");
 
             migrationBuilder.DropTable(
@@ -193,6 +202,9 @@ namespace AndyJavier_AP1_P1.Migrations
 
             migrationBuilder.DropTable(
                 name: "Deudores");
+
+            migrationBuilder.DropTable(
+                name: "Clientes");
         }
     }
 }

@@ -114,11 +114,16 @@ namespace AndyJavier_AP1_P1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Nombres")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("DeudorId");
+
+                    b.HasIndex("ClienteId");
 
                     b.ToTable("Deudores");
                 });
@@ -166,7 +171,7 @@ namespace AndyJavier_AP1_P1.Migrations
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.ClientesDetalle", b =>
                 {
                     b.HasOne("AndyJavier_AP1_P1.Models.Cliente", "Cliente")
-                        .WithMany()
+                        .WithMany("Telefonos")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -204,6 +209,17 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Navigation("Prestamo");
                 });
 
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Deudor", b =>
+                {
+                    b.HasOne("AndyJavier_AP1_P1.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+                });
+
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
                 {
                     b.HasOne("AndyJavier_AP1_P1.Models.Deudor", "Deudor")
@@ -213,6 +229,11 @@ namespace AndyJavier_AP1_P1.Migrations
                         .IsRequired();
 
                     b.Navigation("Deudor");
+                });
+
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cliente", b =>
+                {
+                    b.Navigation("Telefonos");
                 });
 #pragma warning restore 612, 618
         }
