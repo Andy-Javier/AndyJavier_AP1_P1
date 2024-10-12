@@ -1,6 +1,7 @@
 ﻿@page "/Prestamos/Create"
 @inject PrestamoServices prestamoServices
-@inject DeudorServices deudorServices // Agrega este servicio
+@inject DeudorServices deudorServices 
+@inject ClienteServices clienteServices 
 @inject NavigationManager NavigationManager
 
 <h3>Crear Pr&eacute;stamo</h3>
@@ -22,9 +23,17 @@
     <div class="mb-3">
         <label for="deudor" class="form-label">Deudor</label>
         <select id="deudor" @bind="prestamo.DeudorId" class="form-control" required>
-            @foreach (var deudor in deudores)
+            <option value="">Seleccione un deudor</option> <!-- Opción por defecto -->
+            @if (deudores != null && deudores.Count > 0)
             {
-                <option value="@deudor.DeudorId">@deudor.Nombres</option>
+                foreach (var deudor in deudores)
+                {
+                    Console.WriteLine($"DeudorId: {deudor.DeudorId}, Nombre: {deudor.Nombres}, Cliente: {deudor.Cliente?.Nombres}");
+                }
+            }
+            else
+            {
+                <option value="">No hay deudores disponibles</option>
             }
         </select>
     </div>
@@ -39,7 +48,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        deudores = await deudorServices.Listar(); // Cargar la lista de deudores
+        deudores = await deudorServices.ListarConClientes(); // Cambiar a ListarConClientes
+        if (deudores == null || deudores.Count == 0)
+        {
+            Console.WriteLine("No se encontraron deudores");
+        }
     }
 
     private async Task GuardarPrestamo()
