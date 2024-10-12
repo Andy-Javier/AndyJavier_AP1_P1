@@ -9,4 +9,7 @@ public class Deudor
 
     [Required]
     public string? Nombres { get; set; }
+
+    public int ClienteId { get; set; }
+    public Cliente? Cliente { get; set; } // Relación con el modelo Cliente
 }
