@@ -21,21 +21,24 @@ public class PrestamoServices
 
     private async Task<bool> Insertar(Prestamo prestamo)
     {
-        prestamo.Balance = prestamo.Monto; 
         _contexto.Prestamos.Add(prestamo);
         return await _contexto.SaveChangesAsync() > 0;
     }
 
     private async Task<bool> Modificar(Prestamo prestamo)
     {
-        prestamo.Balance = prestamo.Monto; 
         _contexto.Prestamos.Update(prestamo);
-        return await _contexto.SaveChangesAsync() > 0;
+        var modificado = await _contexto.SaveChangesAsync() > 0;
+
+        _contexto.Entry(prestamo).State = EntityState.Detached;
+
+        return modificado;
     }
 
     public async Task<bool> Guardar(Prestamo prestamo)
     {
-        prestamo.Balance = prestamo.Monto; 
+        prestamo.Balance = prestamo.Monto;
+
         if (!await Existe(prestamo.PrestamoId))
             return await Insertar(prestamo);
         else
@@ -44,33 +47,30 @@ public class PrestamoServices
 
     public async Task<bool> Eliminar(int id)
     {
-        var eliminado = await _contexto.Prestamos
+        var eliminarPrestamo = await _contexto.Prestamos
             .Where(p => p.PrestamoId == id)
             .ExecuteDeleteAsync();
-        return eliminado > 0;
+
+        return eliminarPrestamo > 0;
     }
 
     public async Task<Prestamo?> Buscar(int id)
     {
         return await _contexto.Prestamos
-            .Include(d => d.Deudor)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.PrestamoId == id);
     }
 
-    public async Task<List<Prestamo>> Listar(Expression<Func<Prestamo, bool>> Criterio)
+    public async Task<List<Prestamo>> Listar(Expression<Func<Prestamo, bool>> criterio)
     {
         return await _contexto.Prestamos
             .AsNoTracking()
-            .Include(d => d.Deudor)
-            .Where(Criterio)
+            .Where(criterio)
             .ToListAsync();
     }
 
-    public async Task<List<Deudor>> ListarDeudores()
+    public async Task<List<Deudor>> ObtenerDeudores()
     {
-        return await _contexto.Deudores
-            .AsNoTracking()
-            .ToListAsync();
+        return await _contexto.Deudores.AsNoTracking().ToListAsync();
     }
 }
