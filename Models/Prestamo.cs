@@ -1,16 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AndyJavier_AP1_P1.Models;
-
-public class Prestamo
+namespace AndyJavier_AP1_P1.Models
 {
-    [Key]
-    public int PrestamoId { get; set; }
-    [Required]
-    public string? Deudor { get; set; }
-    [Required]
-    public string? Concepto { get; set; }
-    [Required]
-    public int Monto { get; set; }
-    
+    public class Prestamo
+    {
+        [Key]
+        public int PrestamoId { get; set; }
+
+        [Required]
+        public int DeudorId { get; set; } 
+
+        public Deudor? Deudor { get; set; } 
+
+        [Required]
+        public string? Concepto { get; set; }
+
+        [Required]
+        public int Monto { get; set; }
+
+        public int Balance { get; set; }
+    }
 }
