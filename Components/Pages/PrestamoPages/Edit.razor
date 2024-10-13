@@ -1,4 +1,5 @@
 ﻿@page "/Prestamos/Edit/{prestamoId:int}"
+@using AndyJavier_AP1_P1.Services
 @inject PrestamoServices prestamoServices
 @inject NavigationManager NavigationManager
 
@@ -18,15 +19,15 @@ else
             <label for="monto" class="form-label">Monto</label>
             <InputNumber id="monto" @bind-Value="prestamo.Monto" class="form-control" required />
         </div>
-        
+
         <div class="mb-3">
             <label for="concepto" class="form-label">Concepto</label>
             <InputText id="concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
         </div>
-        
+
         <div class="mb-3">
             <label for="deudor" class="form-label">Deudor</label>
-            <InputText id="deudor" @bind-Value="prestamo.Deudor" class="form-control" required />
+            <InputText id="deudor" @bind-Value="prestamo.Deudor.Nombres" class="form-control" required />
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>

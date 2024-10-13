@@ -1,4 +1,5 @@
 ﻿@page "/Prestamos/Index"
+@using AndyJavier_AP1_P1.Services
 @inject PrestamoServices prestamoServices
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
@@ -116,7 +117,7 @@
             }
             else if (filtro == "deudor")
             {
-                ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
+                ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Nombres.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
             }
             else if (filtro == "concepto")
             {
