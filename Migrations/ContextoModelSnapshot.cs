@@ -37,7 +37,7 @@ namespace AndyJavier_AP1_P1.Migrations
 
                     b.HasIndex("DeudorId");
 
-                    b.ToTable("Cobro");
+                    b.ToTable("Cobros");
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.CobroDetalle", b =>
@@ -62,7 +62,7 @@ namespace AndyJavier_AP1_P1.Migrations
 
                     b.HasIndex("PrestamoId");
 
-                    b.ToTable("CobroDetalle");
+                    b.ToTable("CobroDetalles");
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Deudor", b =>
@@ -77,33 +77,23 @@ namespace AndyJavier_AP1_P1.Migrations
 
                     b.HasKey("DeudorId");
 
-                    b.ToTable("Deudor");
+                    b.ToTable("Deudores");
 
                     b.HasData(
                         new
                         {
                             DeudorId = 1,
-                            Nombres = "Nelson"
+                            Nombres = "Andy"
                         },
                         new
                         {
                             DeudorId = 2,
-                            Nombres = "Ana"
+                            Nombres = "Marian"
                         },
                         new
                         {
                             DeudorId = 3,
-                            Nombres = "Luis"
-                        },
-                        new
-                        {
-                            DeudorId = 4,
-                            Nombres = "Maria"
-                        },
-                        new
-                        {
-                            DeudorId = 5,
-                            Nombres = "Rafael"
+                            Nombres = "Anderson"
                         });
                 });
 
@@ -113,8 +103,8 @@ namespace AndyJavier_AP1_P1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Balance")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Concepto")
                         .IsRequired()
@@ -123,14 +113,14 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Property<int>("DeudorId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Monto")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("PrestamoId");
 
                     b.HasIndex("DeudorId");
 
-                    b.ToTable("Prestamo");
+                    b.ToTable("Prestamos");
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cobro", b =>
@@ -153,7 +143,7 @@ namespace AndyJavier_AP1_P1.Migrations
                         .IsRequired();
 
                     b.HasOne("AndyJavier_AP1_P1.Models.Prestamo", "Prestamo")
-                        .WithMany()
+                        .WithMany("CobroDetalles")
                         .HasForeignKey("PrestamoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -175,6 +165,11 @@ namespace AndyJavier_AP1_P1.Migrations
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cobro", b =>
+                {
+                    b.Navigation("CobroDetalles");
+                });
+
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
                 {
                     b.Navigation("CobroDetalles");
                 });
