@@ -1,5 +1,116 @@
-﻿<h3>Delete</h3>
+﻿@page "/Cobros/Delete/{cobroId:int}"
+@inject CobroServices cobroServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Eliminar Cobro</PageTitle>
+
+<Toasts class="p-3 mt-5" Messages="messages" Placement="ToastsPlacement.TopRight" />
+
+<div class="border shadow-lg p-3 rounded">
+    <div class="card-header bg-danger text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0">Eliminar Cobro</h3>
+    </div>
+
+    <div class="card-body">
+        @if (cobro != null)
+        {
+            <div class="mb-3">
+                <label class="form-label"><strong>Deudor:</strong></label>
+                @if (cobro.Deudor != null)
+                {
+                    <p>@cobro.Deudor.Nombres</p>
+                }
+                else
+                {
+                    <p>No se encontró el deudor.</p>
+                }
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Fecha:</strong></label>
+                <p>@(cobro.Fecha.HasValue ? cobro.Fecha.Value.ToShortDateString() : "No disponible")</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Monto:</strong></label>
+                <p>@cobro.Monto.ToString("C")</p>
+            </div>
+
+            <div class="alert alert-danger" role="alert">
+                ¿Estás seguro de que deseas eliminar este cobro?
+            </div>
+
+            <div class="text-end">
+                <button type="button" @onclick="ConfirmarEliminacion" class="btn btn-danger me-2">
+                    <i class="btn bi bi-trash"></i> Eliminar
+                </button>
+                <button type="button" @onclick="Volver" class="btn btn-primary">
+                    <i class="bi bi-arrow-left mt-3"></i> Volver
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning" role="alert">
+                No se encontró el cobro solicitado.
+            </div>
+        }
+    </div>
+</div>
 
 @code {
+    [Parameter] public int cobroId { get; set; }
+    private Cobro cobro; // Almacena el cobro que se va a eliminar
+    private List<ToastMessage> messages = new List<ToastMessage>(); // Para mostrar mensajes de éxito o error
 
+    private string? alertMessage; // Mensaje de alerta para el usuario
+    private AlertColor alertColor; // Color de alerta
+
+    // Se llama al inicializar la página para buscar el cobro por ID
+    protected override async Task OnInitializedAsync()
+    {
+        cobro = await cobroServices.Buscar(cobroId);
+    }
+
+    // Método que confirma la eliminación del cobro
+    private async Task ConfirmarEliminacion()
+    {
+        if (await cobroServices.Eliminar(cobroId))
+        {
+            ShowMessage(ToastType.Success); // Mostrar mensaje de éxito
+            navigationManager.NavigateTo("/Cobros/Index"); // Redirigir a la lista de cobros
+        }
+        else
+        {
+            ShowMessage(ToastType.Warning); // Mostrar mensaje de advertencia
+            ShowAlert("Error al eliminar el cobro.", AlertColor.Danger); // Mostrar alerta de error
+        }
+    }
+
+    // Método para volver a la lista de cobros
+    private void Volver()
+    {
+        navigationManager.NavigateTo("/Cobros/Index");
+    }
+
+    // Método para mostrar mensajes tipo toast
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    // Método para crear un mensaje tipo toast
+    private ToastMessage CreateToastMessage(ToastType toastType)
+        => new ToastMessage
+            {
+                Type = toastType,
+                Title = "Blazor Bootstrap",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Cobro {(cobro != null ? "eliminado" : "no encontrado")} con éxito. Fecha y hora: {DateTime.Now}",
+            };
+
+    // Método para mostrar alertas
+    private void ShowAlert(string message, AlertColor color)
+    {
+        alertMessage = message;
+        alertColor = color;
+    }
 }
