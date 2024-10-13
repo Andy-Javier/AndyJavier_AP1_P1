@@ -19,13 +19,13 @@ namespace AndyJavier_AP1_P1.Services
             return await _contexto.CobroDetalles.AnyAsync(cd => cd.DetalleId == cobroDetalleId);
         }
 
-        private async Task<bool> Insertar(CobroDetalle cobroDetalle)
+        private async Task<bool> Insertar(CobrosDetalle cobroDetalle)
         {
             _contexto.CobroDetalles.Add(cobroDetalle);
             return await _contexto.SaveChangesAsync() > 0;
         }
 
-        private async Task<bool> Modificar(CobroDetalle cobroDetalle)
+        private async Task<bool> Modificar(CobrosDetalle cobroDetalle)
         {
             _contexto.CobroDetalles.Update(cobroDetalle);
             var modificado = await _contexto.SaveChangesAsync() > 0;
@@ -35,7 +35,7 @@ namespace AndyJavier_AP1_P1.Services
             return modificado;
         }
 
-        public async Task<bool> Guardar(CobroDetalle cobroDetalle)
+        public async Task<bool> Guardar(CobrosDetalle cobroDetalle)
         {
             if (!await Existe(cobroDetalle.DetalleId))
                 return await Insertar(cobroDetalle);
@@ -52,7 +52,7 @@ namespace AndyJavier_AP1_P1.Services
             return eliminarCobroDetalle > 0;
         }
 
-        public async Task<CobroDetalle?> Buscar(int id)
+        public async Task<CobrosDetalle?> Buscar(int id)
         {
             return await _contexto.CobroDetalles
                 .AsNoTracking()
@@ -61,7 +61,7 @@ namespace AndyJavier_AP1_P1.Services
                 .FirstOrDefaultAsync(cd => cd.DetalleId == id);
         }
 
-        public async Task<List<CobroDetalle>> Listar(Expression<Func<CobroDetalle, bool>> criterio)
+        public async Task<List<CobrosDetalle>> Listar(Expression<Func<CobrosDetalle, bool>> criterio)
         {
             return await _contexto.CobroDetalles
                 .AsNoTracking()

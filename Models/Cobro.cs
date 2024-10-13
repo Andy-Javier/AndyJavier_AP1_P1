@@ -19,5 +19,5 @@ public class Cobro
     [Required(ErrorMessage = "Es necesario especificar el deudor.")]
     public decimal Monto { get; set; }
 
-    public ICollection<CobroDetalle> CobroDetalles { get; set; } = new List<CobroDetalle>();
+    public ICollection<CobrosDetalle> CobroDetalles { get; set; } = new List<CobrosDetalle>();
 }

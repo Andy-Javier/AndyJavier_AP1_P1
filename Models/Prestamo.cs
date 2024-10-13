@@ -23,5 +23,5 @@ public class Prestamo
     [ForeignKey("DeudorId")]
     public Deudor? Deudor { get; set; }
 
-    public List<CobroDetalle> CobroDetalles { get; set; } = new List<CobroDetalle>();
+    public List<CobrosDetalle> CobroDetalles { get; set; } = new List<CobrosDetalle>();
 }

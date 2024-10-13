@@ -135,12 +135,12 @@
     [Parameter]
     public int CobroId { get; set; }
     public Cobro cobro { get; set; } = new Cobro();
-    public CobroDetalle cobroDetalle { get; set; } = new CobroDetalle();
+    public CobrosDetalle cobroDetalle { get; set; } = new CobrosDetalle();
     public bool existe { get; set; } = false;
     public bool guardo { get; set; } = false;
     public bool elimino { get; set; } = false;
     public List<Deudor> listaDeudores { get; set; } = new List<Deudor>();
-    public List<CobroDetalle> listaCobroDetalle { get; set; } = new List<CobroDetalle>();
+    public List<CobrosDetalle> listaCobroDetalle { get; set; } = new List<CobrosDetalle>();
     public List<Prestamo> listaPrestamo { get; set; } = new List<Prestamo>();
 
     protected override async Task OnInitializedAsync()
@@ -179,14 +179,14 @@
 
         await cobroDetalleServices.Guardar(cobroDetalle);
         listaCobroDetalle.Add(cobroDetalle); // Agregar el detalle a la lista
-        cobroDetalle = new CobroDetalle();
+        cobroDetalle = new CobrosDetalle();
     }
 
     public void Nuevo()
     {
         cobro = new Cobro();
-        cobroDetalle = new CobroDetalle();
-        listaCobroDetalle = new List<CobroDetalle>();
+        cobroDetalle = new CobrosDetalle();
+        listaCobroDetalle = new List<CobrosDetalle>();
     }
 
     public async Task<bool> Validar()
