@@ -19,9 +19,9 @@ namespace AndyJavier_AP1_P1.DAL
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Deudor>().HasData(new List<Deudor>()
             {
-                new Deudor() { DeudorId = 1, Nombres = "Samil" },
-                new Deudor() { DeudorId = 2, Nombres = "Maria" },
-                new Deudor() { DeudorId = 3, Nombres = "Juan" }
+                new Deudor() { DeudorId = 1, Nombres = "Andy" },
+                new Deudor() { DeudorId = 2, Nombres = "Marian" },
+                new Deudor() { DeudorId = 3, Nombres = "Anderson" }
             });
         }
     }
