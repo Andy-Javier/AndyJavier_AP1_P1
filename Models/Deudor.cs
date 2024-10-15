@@ -7,9 +7,6 @@ public class Deudor
     [Key]
     public int DeudorId { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Por favor, ingrese el nombre del deudor.")]
     public string? Nombres { get; set; }
-
-    public int ClienteId { get; set; }
-    public Cliente? Cliente { get; set; } // Relación con el modelo Cliente
 }
