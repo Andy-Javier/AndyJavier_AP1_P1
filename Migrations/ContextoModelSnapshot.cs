@@ -17,51 +17,6 @@ namespace AndyJavier_AP1_P1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cliente", b =>
-                {
-                    b.Property<int>("ClienteId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Direccion")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("LimiteCredito")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Nombres")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Rnc")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("ClienteId");
-
-                    b.ToTable("Clientes");
-                });
-
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.ClientesDetalle", b =>
-                {
-                    b.Property<int>("DetalleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Telefono")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("TipoId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("DetalleId");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("ClientesDetalles");
-                });
-
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cobro", b =>
                 {
                     b.Property<int>("CobroId")
@@ -71,7 +26,8 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Property<int>("DeudorId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateTime?>("Fecha")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Monto")
@@ -84,7 +40,7 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.ToTable("Cobros");
                 });
 
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.CobroDetalle", b =>
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.CobrosDetalle", b =>
                 {
                     b.Property<int>("DetalleId")
                         .ValueGeneratedOnAdd()
@@ -96,7 +52,8 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Property<int>("PrestamoId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("ValorCobrado")
+                    b.Property<decimal?>("ValorCobrado")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("DetalleId");
@@ -114,18 +71,30 @@ namespace AndyJavier_AP1_P1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Nombres")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("DeudorId");
 
-                    b.HasIndex("ClienteId");
-
                     b.ToTable("Deudores");
+
+                    b.HasData(
+                        new
+                        {
+                            DeudorId = 1,
+                            Nombres = "Andy"
+                        },
+                        new
+                        {
+                            DeudorId = 2,
+                            Nombres = "Marian"
+                        },
+                        new
+                        {
+                            DeudorId = 3,
+                            Nombres = "Anderson"
+                        });
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
@@ -144,39 +113,14 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Property<int>("DeudorId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Monto")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("PrestamoId");
 
                     b.HasIndex("DeudorId");
 
                     b.ToTable("Prestamos");
-                });
-
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.TiposTelefonos", b =>
-                {
-                    b.Property<int>("TipoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TipoId");
-
-                    b.ToTable("TiposTelefonos");
-                });
-
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.ClientesDetalle", b =>
-                {
-                    b.HasOne("AndyJavier_AP1_P1.Models.Cliente", "Cliente")
-                        .WithMany("Telefonos")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cobro", b =>
@@ -190,16 +134,16 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Navigation("Deudor");
                 });
 
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.CobroDetalle", b =>
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.CobrosDetalle", b =>
                 {
                     b.HasOne("AndyJavier_AP1_P1.Models.Cobro", "Cobro")
-                        .WithMany()
+                        .WithMany("CobroDetalles")
                         .HasForeignKey("CobroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AndyJavier_AP1_P1.Models.Prestamo", "Prestamo")
-                        .WithMany()
+                        .WithMany("CobroDetalles")
                         .HasForeignKey("PrestamoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -207,17 +151,6 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Navigation("Cobro");
 
                     b.Navigation("Prestamo");
-                });
-
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Deudor", b =>
-                {
-                    b.HasOne("AndyJavier_AP1_P1.Models.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
@@ -231,9 +164,14 @@ namespace AndyJavier_AP1_P1.Migrations
                     b.Navigation("Deudor");
                 });
 
-            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cliente", b =>
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Cobro", b =>
                 {
-                    b.Navigation("Telefonos");
+                    b.Navigation("CobroDetalles");
+                });
+
+            modelBuilder.Entity("AndyJavier_AP1_P1.Models.Prestamo", b =>
+                {
+                    b.Navigation("CobroDetalles");
                 });
 #pragma warning restore 612, 618
         }
