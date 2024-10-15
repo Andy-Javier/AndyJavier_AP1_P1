@@ -1,15 +1,16 @@
 ﻿@page "/Prestamos/Index"
 @inject PrestamoServices prestamoServices
+@inject DeudorServices deudorServices
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
 
 <PageTitle>Pr&eacute;stamos</PageTitle>
 
-<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
+<Toasts class="p-3 mt-5" Messages="messages" Placement="ToastsPlacement.TopRight" />
 
 <div class="border shadow-lg p-3 rounded">
     <div class="card-header bg-primary text-white text-center py-2 rounded">
-        <h3 style="font-weight: bold;" class="mb-0">Pr&eacute;stamos</h3>
+        <h3 style="font-weight: bold;" class="mb-0">Préstamos</h3>
     </div>
 
     <div class="row mb-3 align-items-end">
@@ -21,8 +22,10 @@
                 <option value="deudor">Deudor</option>
                 <option value="concepto">Concepto</option>
                 <option value="monto">Monto</option>
+                <option value="balance">Balance</option>
             </select>
         </div>
+
         <div class="col-md-6">
             <label for="ValorFiltro" class="form-label"></label>
             <div class="input-group">
@@ -32,17 +35,12 @@
                 </button>
             </div>
         </div>
-    </div>
 
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-9"></div>
-            <div class="col-md-3 text-end">
-                <a href="/Prestamos/Create" class="btn btn-success" type="button">
-                    <i class="bi bi-plus-square mt-3"></i>
-                    Crear
-                </a>
-            </div>
+        <div class="col-md-3 text-end">
+            <a href="/Prestamos/Create" class="btn btn-success" type="button">
+                <i class="bi bi-plus-square mt-3"></i>
+                Crear
+            </a>
         </div>
     </div>
 
@@ -50,46 +48,57 @@
         <table class="table table-bordered text-center">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>Pr&eacute;stamoId</th>
+                    <th>PréstamoId</th>
                     <th>Deudor</th>
                     <th>Concepto</th>
                     <th>Monto</th>
+                    <th>Balance</th>
                     <th>Ver</th>
                     <th>Editar</th>
                     <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var prestamo in ListaPrestamos)
+                @if (ListaPrestamos != null && ListaPrestamos.Any())
+                {
+                    foreach (var prestamo in ListaPrestamos)
+                    {
+                        <tr>
+                            <td>@prestamo.PrestamoId</td>
+                            <td>@prestamo.Deudor.Nombres</td>
+                            <td>@prestamo.Concepto</td>
+                            <td>@prestamo.Monto.ToString("C")</td>
+                            <td>@prestamo.Balance.ToString("C")</td>
+                            <td>
+                                <a class="btn btn-outline-primary" href="/Prestamos/Details/@prestamo.PrestamoId">
+                                    <span class="bi bi-eye"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-success" href="/Prestamos/Edit/@prestamo.PrestamoId">
+                                    <span class="bi bi-pencil-square"></span>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-danger" href="/Prestamos/Delete/@prestamo.PrestamoId">
+                                    <span class="bi bi-trash"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@prestamo.PrestamoId</td>
-                        <td>@prestamo.Deudor</td>
-                        <td>@prestamo.Concepto</td>
-                        <td>@prestamo.Monto.ToString("C")</td>
-                        <td>
-                            <a class="btn btn-outline-primary" href="/Prestamos/Details/@prestamo.PrestamoId">
-                                <a href="#" class="btn bi bi-eye"></a>
-                            </a>
-                        </td>
-                        <td>
-                            <a class="btn btn-outline-success" href="/Prestamos/Edit/@prestamo.PrestamoId">
-                                <span class="btn bi bi-pencil-square"></span>
-                            </a>
-                        </td>
-                        <td>
-                            <a class="btn btn-outline-danger" href="/Prestamos/Delete/@prestamo.PrestamoId">
-                                <span class="btn bi bi-trash"></span>
-                            </a>
-                        </td>
-
+                        <td colspan="8">No se encontraron préstamos.</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
     <div class="card-footer text-start">
-        <p style="font-weight: bold;">Total de Pr&eacute;stamos: @ListaPrestamos.Count</p>
+        <p style="font-weight: bold;">Total de Préstamos: @ListaPrestamos.Count</p>
     </div>
 </div>
 
@@ -110,22 +119,32 @@
     {
         if (!string.IsNullOrWhiteSpace(valorFiltro))
         {
-            if (filtro == "id" && int.TryParse(valorFiltro, out int prestamoId))
+            switch (filtro)
             {
-                ListaPrestamos = await prestamoServices.Listar(p => p.PrestamoId == prestamoId);
-            }
-            else if (filtro == "deudor")
-            {
-                ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Nombres.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
-            }
-
-            else if (filtro == "concepto")
-            {
-                ListaPrestamos = await prestamoServices.Listar(p => p.Concepto.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
-            }
-            else if (filtro == "monto" && decimal.TryParse(valorFiltro, out decimal monto))
-            {
-                ListaPrestamos = await prestamoServices.Listar(p => p.Monto == monto);
+                case "id":
+                    if (int.TryParse(valorFiltro, out int prestamoId))
+                    {
+                        ListaPrestamos = await prestamoServices.Listar(p => p.PrestamoId == prestamoId);
+                    }
+                    break;
+                case "deudor":
+                    ListaPrestamos = await prestamoServices.Listar(p => p.Deudor.Nombres.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
+                    break;
+                case "concepto":
+                    ListaPrestamos = await prestamoServices.Listar(p => p.Concepto.Contains(valorFiltro, StringComparison.OrdinalIgnoreCase));
+                    break;
+                case "monto":
+                    if (decimal.TryParse(valorFiltro, out decimal monto))
+                    {
+                        ListaPrestamos = await prestamoServices.Listar(p => p.Monto == monto);
+                    }
+                    break;
+                case "balance":
+                    if (decimal.TryParse(valorFiltro, out decimal balance))
+                    {
+                        ListaPrestamos = await prestamoServices.Listar(p => p.Balance == balance);
+                    }
+                    break;
             }
         }
         else
@@ -148,7 +167,7 @@
                 Type = toastType,
                 Title = "Blazor Bootstrap",
                 HelpText = $"{DateTime.Now}",
-                Message = $"Fecha y hora: {DateTime.Now}",
+                Message = $"DateTime: {DateTime.Now}",
             };
     }
 }

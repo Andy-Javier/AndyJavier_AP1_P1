@@ -1,4 +1,5 @@
 ﻿@page "/Prestamos/Edit/{prestamoId:int}"
+@using AndyJavier_AP1_P1.Services
 @inject PrestamoServices prestamoServices
 @inject NavigationManager NavigationManager
 
@@ -37,7 +38,7 @@ else
 @code {
     [Parameter]
     public int prestamoId { get; set; }
-    private Prestamo? prestamo;
+    private Prestamo prestamo;
 
     protected override async Task OnInitializedAsync()
     {

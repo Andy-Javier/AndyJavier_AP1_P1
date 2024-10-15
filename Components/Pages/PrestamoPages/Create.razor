@@ -1,68 +1,129 @@
 ﻿@page "/Prestamos/Create"
 @inject PrestamoServices prestamoServices
-@inject DeudorServices deudorServices 
-@inject ClienteServices clienteServices 
-@inject NavigationManager NavigationManager
+@inject DeudorServices deudorServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
 
-<h3>Crear Pr&eacute;stamo</h3>
+<PageTitle>Crear Préstamo</PageTitle>
 
-<EditForm Model="prestamo" OnValidSubmit="GuardarPrestamo">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<Toasts class="p-3 mt-5" Messages="messages" Placement="ToastsPlacement.TopRight" />
 
-    <div class="mb-3">
-        <label for="monto" class="form-label">Monto</label>
-        <InputNumber id="monto" @bind-Value="prestamo.Monto" class="form-control" required />
+<div class="border shadow-lg p-3 rounded">
+    <div class="card-header bg-success text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0">Crear Préstamo</h3>
     </div>
 
-    <div class="mb-3">
-        <label for="concepto" class="form-label">Concepto</label>
-        <InputText id="concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
-    </div>
+    <div class="card-body">
+        <EditForm Model="prestamo" OnValidSubmit="GuardarPrestamo">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <div class="mb-3">
-        <label for="deudor" class="form-label">Deudor</label>
-        <select id="deudor" @bind="prestamo.DeudorId" class="form-control" required>
-            <option value="">Seleccione un deudor</option> <!-- Opción por defecto -->
-            @if (deudores != null && deudores.Count > 0)
-            {
-                foreach (var deudor in deudores)
-                {
-                    Console.WriteLine($"DeudorId: {deudor.DeudorId}, Nombre: {deudor.Nombres}, Cliente: {deudor.Cliente?.Nombres}");
-                }
-            }
-            else
-            {
-                <option value="">No hay deudores disponibles</option>
-            }
-        </select>
-    </div>
+            @*Deudor*@
+            <div class="mb-3">
+                <label for="DeudorId" class="form-label">Deudor</label>
+                <InputSelect id="DeudorId" @bind-Value="prestamo.DeudorId" class="form-control" required>
+                    <option value="">Seleccione un Deudor</option>
+                    @foreach (var deudor in deudores)
+                    {
+                        <option value="@deudor.DeudorId">@deudor.Nombres</option>
+                    }
+                </InputSelect>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Guardar</button>
-    <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
-</EditForm>
+            @*Concepto*@
+            <div class="mb-3">
+                <label for="Concepto" class="form-label">Concepto</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-card-text"></i>
+                    </span>
+                    <InputText id="Concepto" @bind-Value="prestamo.Concepto" class="form-control" required />
+                </div>
+            </div>
+
+            @*Monto*@
+            <div class="mb-3">
+                <label for="Monto" class="form-label">Monto</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-currency-dollar"></i>
+                    </span>
+                    <InputNumber id="Monto" @bind-Value="prestamo.Monto" class="form-control" required />
+                </div>
+            </div>
+
+            @*Balance oculto*@
+            <InputHidden @bind="prestamo.Balance" />
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-success me-2">
+                    <i class="bi bi-floppy"></i> Guardar
+                </button>
+                <button type="button" @onclick="Volver" class="btn btn-danger">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </button>
+            </div>
+        </EditForm>
+
+        @* Alertas *@
+        @if (alertMessage != null)
+        {
+            <div class="mt-3">
+                <Alert Color="@alertColor">@alertMessage</Alert>
+            </div>
+        }
+    </div>
+</div>
 
 @code {
     private Prestamo prestamo = new Prestamo();
-    private List<Deudor> deudores = new List<Deudor>(); // Lista de deudores
+    private List<Deudor> deudores = new List<Deudor>();
+    private List<ToastMessage> messages = new List<ToastMessage>();
+
+    private string? alertMessage;
+    private AlertColor alertColor;
 
     protected override async Task OnInitializedAsync()
     {
-        deudores = await deudorServices.ListarConClientes(); // Cambiar a ListarConClientes
-        if (deudores == null || deudores.Count == 0)
-        {
-            Console.WriteLine("No se encontraron deudores");
-        }
+        deudores = await deudorServices.Listar(); // Ajustado a deudoresServices
     }
 
     private async Task GuardarPrestamo()
     {
-        await prestamoServices.Guardar(prestamo);
-        NavigationManager.NavigateTo("/Prestamos/Index");
+        prestamo.Balance = prestamo.Monto;
+
+        if (await prestamoServices.Guardar(prestamo))
+        {
+            ShowMessage(ToastType.Success);
+            ShowAlert($"Préstamo creado con éxito. ID: {prestamo.PrestamoId}", AlertColor.Success); // Mostrar ID correctamente
+            navigationManager.NavigateTo("/Prestamos/Index");
+        }
+        else
+        {
+            ShowMessage(ToastType.Warning);
+            ShowAlert("Error al crear el préstamo.", AlertColor.Danger);
+        }
     }
 
-    private void Cancelar()
+    private void Volver()
     {
-        NavigationManager.NavigateTo("/Prestamos/Index");
+        navigationManager.NavigateTo("/Prestamos/Index");
+    }
+
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    private ToastMessage CreateToastMessage(ToastType toastType)
+        => new ToastMessage
+            {
+                Type = toastType,
+                Title = "Blazor Bootstrap",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Préstamo {(prestamo.PrestamoId > 0 ? "modificado" : "creado")} con éxito. Fecha y hora: {DateTime.Now}",
+            };
+
+    private void ShowAlert(string message, AlertColor color)
+    {
+        alertMessage = message;
+        alertColor = color;
     }
 }
