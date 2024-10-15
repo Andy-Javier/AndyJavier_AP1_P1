@@ -1,44 +1,80 @@
-﻿using AndyJavier_AP1_P1.DAL;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using AndyJavier_AP1_P1.DAL;
 using AndyJavier_AP1_P1.Models;
-using Microsoft.EntityFrameworkCore;
 
-public class CobroServices
+namespace AndyJavier_AP1_P1.Services
 {
-    private readonly Contexto _contexto;
-
-    public CobroServices(Contexto contexto)
+    public class CobroServices
     {
-        _contexto = contexto;
-    }
+        private readonly Contexto _contexto;
 
-    public async Task<List<Cobro>> Listar()
-    {
-        return await _contexto.Cobros.ToListAsync();
-    }
+        public CobroServices(Contexto contexto)
+        {
+            _contexto = contexto;
+        }
 
-    public async Task<Cobro?> Buscar(int cobroId)
-    {
-        return await _contexto.Cobros.FindAsync(cobroId);
-    }
+        public async Task<bool> Existe(int cobroId)
+        {
+            return await _contexto.Cobros.AnyAsync(c => c.CobroId == cobroId);
+        }
 
-    public async Task<bool> Insertar(Cobro cobro)
-    {
-        _contexto.Cobros.Add(cobro);
-        return await _contexto.SaveChangesAsync() > 0;
-    }
+        private async Task<bool> Insertar(Cobro cobro)
+        {
+            _contexto.Cobros.Add(cobro);
+            return await _contexto.SaveChangesAsync() > 0;
+        }
 
-    public async Task<bool> Modificar(Cobro cobro)
-    {
-        _contexto.Cobros.Update(cobro);
-        return await _contexto.SaveChangesAsync() > 0;
-    }
+        private async Task<bool> Modificar(Cobro cobro)
+        {
+            _contexto.Cobros.Update(cobro);
+            return await _contexto.SaveChangesAsync() > 0;
+        }
 
-    public async Task<bool> Eliminar(int cobroId)
-    {
-        var cobro = await Buscar(cobroId);
-        if (cobro == null) return false;
+        public async Task<bool> Guardar(Cobro cobro)
+        {
+            if (!await Existe(cobro.CobroId))
+                return await Insertar(cobro);
+            else
+                return await Modificar(cobro);
+        }
 
-        _contexto.Cobros.Remove(cobro);
-        return await _contexto.SaveChangesAsync() > 0;
+        public async Task<bool> Eliminar(int id)
+        {
+            var eliminarCobro = await _contexto.Cobros
+                .Where(c => c.CobroId == id)
+                .ExecuteDeleteAsync();
+
+            return eliminarCobro > 0;
+        }
+
+        public async Task<Cobro?> Buscar(int id)
+        {
+            return await _contexto.Cobros
+                .Include(c => c.Deudor)
+                .Include(c => c.CobroDetalles)
+                    .ThenInclude(cd => cd.Prestamo)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.CobroId == id);
+        }
+
+        public async Task<List<Cobro>> Listar(Expression<Func<Cobro, bool>> criterio)
+        {
+            return await _contexto.Cobros
+                .Include(c => c.CobroDetalles)
+                .AsNoTracking()
+                .Where(criterio)
+                .ToListAsync();
+        }
+
+        public async Task<List<Deudor>> ObtenerDeudores()
+        {
+            return await _contexto.Deudores.ToListAsync();
+        }
+
+        public async Task<List<Prestamo>> ObtenerPrestamos()
+        {
+            return await _contexto.Prestamos.ToListAsync();
+        }
     }
 }
